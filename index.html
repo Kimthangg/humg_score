@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title >Tính Điểm Học Phần</title>
+    <link rel="icon" href="https://i.postimg.cc/xCmDcCRT/Logo-Truong-Dai-hoc-Mo-Dia-chat.jpg" type="image/x-icon">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- Phần hiển thị tổng điểm -->
+    <div class="totals-container">
+        <div class="totals">
+            <div class="total-item">📚 Tổng tín chỉ: <span id="totalCredits">0</span></div>
+            <div class="total-item">🔟 Hệ 10: <span id="totalGrade10">0.0</span></div>
+            <div class="total-item">4️⃣ Hệ 4: <span id="totalGrade4">0.0</span></div>
+        </div>
+    </div>
+    <!-- Thêm/Sửa điểm -->
+    <div class="container">
+        <h1>Tính Điểm Học Phần👀</h1>
+        <label for="courseName">Tên học phần:</label>
+        <input type="text" id="courseName">
+
+        <label for="creditHours">Tín chỉ:</label>
+        <input type="number" id="creditHours" min="1">
+
+        <label for="gradeC">Điểm C:</label>
+        <input type="number" id="gradeC" min="0" max="10">
+
+        <label for="gradeB">Điểm B:</label>
+        <input type="number" id="gradeB" min="0" max="10">
+
+        <label for="gradeA">Điểm A:</label>
+        <input type="number" id="gradeA" min="0" max="10">
+
+        <button onclick="addCourse()">Thêm học phần</button>
+        <br>
+        <br>
+        <!-- Form Upload File -->
+        <div class="container mt-4">
+            <form id="uploadForm" class="p-4 bg-white shadow rounded text-center">
+                <h4 class="mb-3 fw-bold">📂 Tải lên tệp Excel</h4>
+                <div class="input-group">
+                    <input type="file" class="form-control" id="fileInput" accept=".xlsx">
+                </div>
+            </form>
+        </div>
+          <br>
+        <!-- Bảng hiển thị dữ liệu -->
+        <div class="container mt-4">
+            <div class="table-responsive"> <!-- Cho phép cuộn ngang nếu bảng quá rộng -->
+                <table class="table table-striped table-hover table-bordered text-center align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Tên học phần</th>
+                            <th>Tín chỉ</th>
+                            <th>Điểm C</th>
+                            <th>Điểm B</th>
+                            <th>Điểm A</th>
+                            <th>Điểm hệ 10</th>
+                            <th>Điểm hệ chữ</th>
+                            <th>Chọn điểm muốn đổi</th>
+                            <th>Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody id="courseTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <button class="round-button" onclick="toggleCells()">Ẩn điểm thành phần</button>
+        <br>
+         
+        <!-- <button onclick="exportToCSV()">Xuất CSV</button>
+        <button onclick="exportToExcel()">Xuất Excel</button> -->
+    </div>
+
+    <script src="chuc_nang.js"></script>
+    
+</body>
+</html>
