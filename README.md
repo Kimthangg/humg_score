@@ -1,9 +1,7 @@
 # Hướng Dẫn Lấy File Điểm
 
 ## Bước 1: Đăng Nhập
-Truy cập website  
-[https://daotao.humg.edu.vn](https://daotao.humg.edu.vn)  
-để đăng nhập bằng tài khoản của bạn. 
+Truy cập website [https://daotao.humg.edu.vn](https://daotao.humg.edu.vn) để đăng nhập bằng tài khoản của bạn. 
 
 Sau khi đăng nhập, chọn mục **"Xem điểm"** và chọn **"Xuất Excel"** ở góc phải màn hình để tải về file Excel chứa thông tin điểm của bạn.
 
