@@ -1,32 +1,32 @@
 let selectedRow = null;
 
-        function calculateGrades(gradeC, gradeB, gradeA) {
-            const grade10 = (gradeC * 0.1 + gradeB * 0.3 + gradeA * 0.6).toFixed(1);
+function calculateGrades(gradeC, gradeB, gradeA) {
+    const grade10 = (gradeC * 0.1 + gradeB * 0.3 + gradeA * 0.6).toFixed(1);
 
-            let grade4;
-            if (grade10 < 4) {
-                grade4 = "F";
-            } else if (grade10 < 5) {
-                grade4 = "D";
-            } else if (grade10 < 5.5) {
-                grade4 = "D+";
-            } else if (grade10 < 6.5) {
-                grade4 = "C";
-            } else if (grade10 < 7) {
-                grade4 = "C+";
-            } else if (grade10 < 8) {
-                grade4 = "B";
-            } else if (grade10 < 8.5) {
-                grade4 = "B+";
-            } else if (grade10 < 9) {
-                grade4 = "A";
-            } else {
-                grade4 = "A+";
-            }
-            return { grade10, grade4 };
-        }
+    let grade4;
+    if (grade10 < 4) {
+        grade4 = "F";
+    } else if (grade10 < 5) {
+        grade4 = "D";
+    } else if (grade10 < 5.5) {
+        grade4 = "D+";
+    } else if (grade10 < 6.5) {
+        grade4 = "C";
+    } else if (grade10 < 7) {
+        grade4 = "C+";
+    } else if (grade10 < 8) {
+        grade4 = "B";
+    } else if (grade10 < 8.5) {
+        grade4 = "B+";
+    } else if (grade10 < 9) {
+        grade4 = "A";
+    } else {
+        grade4 = "A+";
+    }
+    return { grade10, grade4 };
+}
 
-        function updateTotals() {
+function updateTotals() {
     const tableBody = document.getElementById('courseTableBody');
     totalCredits = 0;
     totalGrade10 = 0;
@@ -44,13 +44,21 @@ let selectedRow = null;
             // Nếu không có select thì lấy giá trị gốc từ cell[6]
             grade4 = row.cells[6].innerText;
         }
-        console.log(grade4);
         totalCredits += credits;
-        totalGrade10 += credits * grade10;
+        // Xử lí khi sửa điểm chữ thì điểm hệ 10 không hiển thị
+        if (grade4 !== row.cells[6].innerText) {
+            totalGrade10 = "Đang sửa điểm chữ";
+            document.getElementById('totalGrade10').innerText = totalGrade10;
+            // document.getElementById('totalGrade10').style.color = "#F44336";
+        } else {
+            totalGrade10 += credits * grade10;
+            document.getElementById('totalGrade10').innerText = (totalGrade10 / totalCredits).toFixed(2);
+            document.getElementById('totalGrade10').style.color = "";
+
+        }
         totalGrade4 += credits * convertGrade4ToNumber(grade4);
     }
     document.getElementById('totalCredits').innerText = totalCredits;
-    document.getElementById('totalGrade10').innerText = (totalGrade10 / totalCredits).toFixed(2);
     document.getElementById('totalGrade4').innerText = (totalGrade4 / totalCredits).toFixed(2);
 }
 
@@ -116,7 +124,21 @@ function addCourse() {
       newRow.insertCell(4).innerText = gradeA;
       newRow.insertCell(5).innerText = grade10;
       newRow.insertCell(6).innerText = grade4;
-      const actionsCell = newRow.insertCell(7);
+      const gradeCell = newRow.insertCell(7);
+            gradeCell.innerHTML = `
+                <select class="form-select grade-select" onchange="changeGradeColor(this, '${grade4}'); updateTotals();">
+                    <option value="A+" ${grade4 === "A+" ? "selected" : ""}>A+</option>
+                    <option value="A" ${grade4 === "A" ? "selected" : ""}>A</option>
+                    <option value="B+" ${grade4 === "B+" ? "selected" : ""}>B+</option>
+                    <option value="B" ${grade4 === "B" ? "selected" : ""}>B</option>
+                    <option value="C+" ${grade4 === "C+" ? "selected" : ""}>C+</option>
+                    <option value="C" ${grade4 === "C" ? "selected" : ""}>C</option>
+                    <option value="D+" ${grade4 === "D+" ? "selected" : ""}>D+</option>
+                    <option value="D" ${grade4 === "D" ? "selected" : ""}>D</option>
+                    <option value="F" ${grade4 === "F" ? "selected" : ""}>F</option>
+                </select>
+            `;
+      const actionsCell = newRow.insertCell(8);
       actionsCell.innerHTML = `
           <div class="btn-group">
               <button onclick="editCourse(this)">Sửa</button>
@@ -133,84 +155,33 @@ function addCourse() {
 
   updateTotals();
 }
-
-        function editCourse(button) {
-            selectedRow = button.parentElement.parentElement.parentElement;
-            document.getElementById('courseName').value = selectedRow.cells[0].innerText;
-            document.getElementById('creditHours').value = selectedRow.cells[1].innerText;
-            document.getElementById('gradeC').value = selectedRow.cells[2].innerText;
-            document.getElementById('gradeB').value = selectedRow.cells[3].innerText;
-            document.getElementById('gradeA').value = selectedRow.cells[4].innerText;
-        }
-
-        function deleteCourse(button) {
-            const row = button.parentElement.parentElement.parentElement;
-            row.remove();
-            updateTotals();
-        }
-        function exportToCSV() {
-    const rows = [["Tên học phần", "Tín chỉ", "Điểm C", "Điểm B", "Điểm A", "Điểm hệ 10", "Điểm hệ 4"]];
-    const table = document.getElementById("courseTableBody");
-    
-    for (let i = 0; i < table.rows.length; i++) {
-        const rowData = [];
-        for (let j = 0; j < (table.rows[i].cells.length)-1; j++) {
-            rowData.push(table.rows[i].cells[j].innerText);
-        }
-        rows.push(rowData);
-    }
-    
-    let csvContent = "data:text/csv;charset=utf-8," 
-        + rows.map(e => e.join(",")).join("\n");
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", "course_grades.csv");
-    document.body.appendChild(link);
-    
-    link.click(); // Trigger the download
+function editCourse(button) {
+    toggleCourseForm()
+    selectedRow = button.parentElement.parentElement.parentElement;
+    document.getElementById('courseName').value = selectedRow.cells[0].innerText;
+    document.getElementById('creditHours').value = selectedRow.cells[1].innerText;
+    document.getElementById('gradeC').value = selectedRow.cells[2].innerText;
+    document.getElementById('gradeB').value = selectedRow.cells[3].innerText;
+    document.getElementById('gradeA').value = selectedRow.cells[4].innerText;
 }
 
-// Hàm xuất Excel
-function exportToExcel() {
-    const rows = [["Tên học phần", "Tín chỉ", "Điểm C", "Điểm B", "Điểm A", "Điểm hệ 10", "Điểm hệ 4"]];
-    const table = document.getElementById("courseTableBody");
-
-    for (let i = 0; i < table.rows.length; i++) {
-        const rowData = [];
-        for (let j = 0; j < (table.rows[i].cells.length)-1; j++) {
-            rowData.push(table.rows[i].cells[j].innerText);
-        }
-        rows.push(rowData);
-    }
-
-    const wb = XLSX.utils.book_new();
-    const ws = XLSX.utils.aoa_to_sheet(rows);
-    XLSX.utils.book_append_sheet(wb, ws, "Course Grades");
-
-    // Tạo Blob từ Workbook và tải xuống
-    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
-    const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
-
-    saveAs(blob, "course_grades.xlsx"); // Sử dụng thư viện FileSaver.js để tải xuống file
-
-    function s2ab(s) {
-        const buf = new ArrayBuffer(s.length);
-        const view = new Uint8Array(buf);
-        for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
-        return buf;
-    }
+function deleteCourse(button) {
+    const row = button.parentElement.parentElement.parentElement;
+    row.remove();
+    updateTotals();
 }
-document.getElementById('fileInput').addEventListener('change', importFromExcel);
-// Hàm nhập từ Excel
-function importFromExcel(event) {
-    const file = event.target.files[0];
+document.getElementById('uploadBtn').addEventListener('click', function() {
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
     if (!file) { 
-        console.error("Không có file nào được chọn!");
+        alert("Vui lòng chọn file trước!");
         return;
     }
+    importFromExcel(file);
+});
 
+// Hàm nhập từ Excel
+function importFromExcel(file) {
     const reader = new FileReader();
 
     reader.onload = function(e) {
@@ -224,11 +195,12 @@ function importFromExcel(event) {
 
         // Lọc ra các môn học
         rows = rows.filter(row => row["Tên môn học"]);
-        const list_course = new Set(['7300101','7300102','7300201','7300103','7300104','7300202','7300203','7010701','7010702','7010703'])        
+        const list_course = new Set(['7300101','7300102','7300201','7300103','7300104','7300202','7300203','7010701','7010702','7010703']);
+        
         // Loại bỏ các mã học phần không hợp lệ
         rows = rows.map(row => {
-        let courseCode = row["Mã MH"] ? row["Mã MH"].toString().trim() : ""; // Chuyển về chuỗi và loại bỏ khoảng trắng
-        return isNaN(Number(courseCode)) || list_course.has(courseCode) ? null : { ...row, "Mã MH": Number(courseCode) };
+            let courseCode = row["Mã MH"] ? row["Mã MH"].toString().trim() : ""; // Chuyển về chuỗi và loại bỏ khoảng trắng
+            return isNaN(Number(courseCode)) || list_course.has(courseCode) ? null : { ...row, "Mã MH": Number(courseCode) };
         }).filter(row => row !== null);
 
         // Chuyển đổi dữ liệu sang object
@@ -275,7 +247,7 @@ function importFromExcel(event) {
                     <button onclick="editCourse(this)">Sửa</button>
                     <button class="delete-button" onclick="deleteCourse(this)">Xóa</button>
                 </div>`;
-            });
+        });
         // Cập nhật tổng điểm
         updateTotals();
     };
@@ -324,4 +296,15 @@ function toggleCells() {
     // Cập nhật trạng thái và đổi tên nút
     isHidden = !isHidden;
     document.querySelector(".round-button").innerText = isHidden ? "Hiện điểm thành phần" : "Ẩn điểm thành phần";
+}
+function toggleCourseForm() {
+    var form = document.getElementById("courseForm");
+    var btn = document.getElementById("toggleFormButton");
+    if (form.style.display === "none") {
+        form.style.display = "block";
+        btn.innerText = "Ẩn thêm học phần";
+    } else {
+        form.style.display = "none";
+        btn.innerText = "Thêm học phần";
+    }
 }

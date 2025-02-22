@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <title >Tính Điểm Học Phần</title>
-    <link rel="icon" href="https://i.postimg.cc/xCmDcCRT/Logo-Truong-Dai-hoc-Mo-Dia-chat.jpg" type="image/x-icon">
+    <link rel="icon" href="https://i.postimg.cc/P5wyws3R/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -19,39 +19,48 @@
             <div class="total-item">4️⃣ Hệ 4: <span id="totalGrade4">0.0</span></div>
         </div>
     </div>
+    <header class="text-center my-4">
+      <h1 class="display-4 fw-bold">
+        Tính điểm học phần HUMG 
+        <img src="https://i.postimg.cc/P5wyws3R/logo.png" alt="Icon" style="width:60px; height:60px;">
+      </h1>
+    </header>
     <!-- Thêm/Sửa điểm -->
     <div class="container">
-        <h1>Tính Điểm Học Phần👀</h1>
-        <label for="courseName">Tên học phần:</label>
-        <input type="text" id="courseName">
-
-        <label for="creditHours">Tín chỉ:</label>
-        <input type="number" id="creditHours" min="1">
-
-        <label for="gradeC">Điểm C:</label>
-        <input type="number" id="gradeC" min="0" max="10">
-
-        <label for="gradeB">Điểm B:</label>
-        <input type="number" id="gradeB" min="0" max="10">
-
-        <label for="gradeA">Điểm A:</label>
-        <input type="number" id="gradeA" min="0" max="10">
-
-        <button onclick="addCourse()">Thêm học phần</button>
-        <br>
-        <br>
         <!-- Form Upload File -->
-        <div class="container mt-4">
+        <div class="mt-4">
             <form id="uploadForm" class="p-4 bg-white shadow rounded text-center">
-                <h4 class="mb-3 fw-bold">📂 Tải lên tệp Excel</h4>
+                
+                <h4 class="mb-3 fw-bold">📂 Tải lên tệp Excel<br><a href="README.md" style="font-size: 15px;">Hướng dẫn lấy file điểm</a></h4>
                 <div class="input-group">
                     <input type="file" class="form-control" id="fileInput" accept=".xlsx">
                 </div>
+                <br>
+                <button type="button" id="uploadBtn" class="btn btn-primary" style="width: 17%; padding: 7px;">Tải tệp lên👆</button>
             </form>
         </div>
-          <br>
+        
         <!-- Bảng hiển thị dữ liệu -->
         <div class="container mt-4">
+            <button id="toggleFormButton" onclick="toggleCourseForm()">Thêm học phần</button>
+            <div id="courseForm" style="display: none;">
+                <label for="courseName">Tên học phần:</label>
+                <input type="text" id="courseName">
+    
+                <label for="creditHours">Tín chỉ:</label>
+                <input type="number" id="creditHours" min="1">
+    
+                <label for="gradeC">Điểm C:</label>
+                <input type="number" id="gradeC" min="0" max="10">
+    
+                <label for="gradeB">Điểm B:</label>
+                <input type="number" id="gradeB" min="0" max="10">
+    
+                <label for="gradeA">Điểm A:</label>
+                <input type="number" id="gradeA" min="0" max="10">
+    
+                <button onclick="addCourse()">Thêm học phần</button>
+            </div>
             <div class="table-responsive"> <!-- Cho phép cuộn ngang nếu bảng quá rộng -->
                 <table class="table table-striped table-hover table-bordered text-center align-middle">
                     <thead class="table-primary">
@@ -63,7 +72,7 @@
                             <th>Điểm A</th>
                             <th>Điểm hệ 10</th>
                             <th>Điểm hệ chữ</th>
-                            <th>Chọn điểm muốn đổi</th>
+                            <th>Điểm mong muốn</th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -78,7 +87,7 @@
         <button onclick="exportToExcel()">Xuất Excel</button> -->
     </div>
 
-    <script src="chuc_nang.js"></script>
+    <script src="chuc_nang_test.js"></script>
     
 </body>
 </html>
