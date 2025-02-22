@@ -1,4 +1,4 @@
-# Hướng Dẫn Xuất & Chỉnh Sửa File Điểm
+# Hướng Dẫn Lấy File Điểm
 
 ## Bước 1: Đăng Nhập
 Truy cập website  
