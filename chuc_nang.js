@@ -117,37 +117,50 @@ function addCourse() {
       selectedRow.cells[4].innerText = gradeA;
       selectedRow.cells[5].innerText = grade10;
       selectedRow.cells[6].innerText = grade4;
+      selectedRow.cells[7].innerHTML = `
+        <select class="form-select grade-select" onchange="changeGradeColor(this, '${grade4}'); updateTotals();">
+          <option value="A+" ${grade4 === "A+" ? "selected" : ""}>A+</option>
+          <option value="A" ${grade4 === "A" ? "selected" : ""}>A</option>
+          <option value="B+" ${grade4 === "B+" ? "selected" : ""}>B+</option>
+          <option value="B" ${grade4 === "B" ? "selected" : ""}>B</option>
+          <option value="C+" ${grade4 === "C+" ? "selected" : ""}>C+</option>
+          <option value="C" ${grade4 === "C" ? "selected" : ""}>C</option>
+          <option value="D+" ${grade4 === "D+" ? "selected" : ""}>D+</option>
+          <option value="D" ${grade4 === "D" ? "selected" : ""}>D</option>
+          <option value="F" ${grade4 === "F" ? "selected" : ""}>F</option>
+        </select>
+    `;
       selectedRow = null;
   } else {
-      const newRow = tableBody.insertRow();
-      newRow.insertCell(0).innerText = courseName;
-      newRow.insertCell(1).innerText = creditHours;
-      newRow.insertCell(2).innerText = gradeC;
-      newRow.insertCell(3).innerText = gradeB;
-      newRow.insertCell(4).innerText = gradeA;
-      newRow.insertCell(5).innerText = grade10;
-      newRow.insertCell(6).innerText = grade4;
-      const gradeCell = newRow.insertCell(7);
-            gradeCell.innerHTML = `
-                <select class="form-select grade-select" onchange="changeGradeColor(this, '${grade4}'); updateTotals();">
-                    <option value="A+" ${grade4 === "A+" ? "selected" : ""}>A+</option>
-                    <option value="A" ${grade4 === "A" ? "selected" : ""}>A</option>
-                    <option value="B+" ${grade4 === "B+" ? "selected" : ""}>B+</option>
-                    <option value="B" ${grade4 === "B" ? "selected" : ""}>B</option>
-                    <option value="C+" ${grade4 === "C+" ? "selected" : ""}>C+</option>
-                    <option value="C" ${grade4 === "C" ? "selected" : ""}>C</option>
-                    <option value="D+" ${grade4 === "D+" ? "selected" : ""}>D+</option>
-                    <option value="D" ${grade4 === "D" ? "selected" : ""}>D</option>
-                    <option value="F" ${grade4 === "F" ? "selected" : ""}>F</option>
-                </select>
-            `;
-      const actionsCell = newRow.insertCell(8);
-      actionsCell.innerHTML = `
-          <div class="btn-group">
-              <button onclick="editCourse(this)">Sửa</button>
-              <button class="delete-button" onclick="deleteCourse(this)">Xóa</button>
-          </div>
-      `;
+    const newRow = tableBody.insertRow(0);
+    newRow.insertCell(0).innerText = courseName;
+    newRow.insertCell(1).innerText = creditHours;
+    newRow.insertCell(2).innerText = gradeC;
+    newRow.insertCell(3).innerText = gradeB;
+    newRow.insertCell(4).innerText = gradeA;
+    newRow.insertCell(5).innerText = grade10;
+    newRow.insertCell(6).innerText = grade4;
+    const gradeCell = newRow.insertCell(7);
+        gradeCell.innerHTML = `
+            <select class="form-select grade-select" onchange="changeGradeColor(this, '${grade4}'); updateTotals();">
+              <option value="A+" ${grade4 === "A+" ? "selected" : ""}>A+</option>
+              <option value="A" ${grade4 === "A" ? "selected" : ""}>A</option>
+              <option value="B+" ${grade4 === "B+" ? "selected" : ""}>B+</option>
+              <option value="B" ${grade4 === "B" ? "selected" : ""}>B</option>
+              <option value="C+" ${grade4 === "C+" ? "selected" : ""}>C+</option>
+              <option value="C" ${grade4 === "C" ? "selected" : ""}>C</option>
+              <option value="D+" ${grade4 === "D+" ? "selected" : ""}>D+</option>
+              <option value="D" ${grade4 === "D" ? "selected" : ""}>D</option>
+              <option value="F" ${grade4 === "F" ? "selected" : ""}>F</option>
+            </select>
+        `;
+    const actionsCell = newRow.insertCell(8);
+    actionsCell.innerHTML = `
+        <div class="btn-group">
+          <button onclick="editCourse(this)">Sửa</button>
+          <button class="delete-button" onclick="deleteCourse(this)">Xóa</button>
+        </div>
+    `;
   }
 
   document.getElementById('courseName').value = '';
