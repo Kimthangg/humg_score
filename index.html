@@ -7,7 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <title >Tính Điểm Học Phần</title>
-    <link rel="icon" href="https://i.postimg.cc/P5wyws3R/logo.png" type="image/x-icon">
+    <link rel="icon" href="img/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
@@ -22,8 +22,15 @@
     <header class="text-center my-4">
       <h1 class="display-4 fw-bold">
         Tính điểm học phần HUMG 
-        <img src="https://i.postimg.cc/P5wyws3R/logo.png" alt="Icon" style="width:60px; height:60px;">
+        <img src="img/logo.png" alt="Icon" style="width:60px; height:60px;">
       </h1>
+    <h4>📚Hệ thống có chức năng:</h4>
+    <ul class="text-start" style="padding-left: 43%; font-size: 16px;">
+        <li style="list-style-type: none;">1️⃣Tính GPA của sinh viên</li>
+        <li style="list-style-type: none;">2️⃣Tính điểm sau khi học cải thiện</li>
+        <li style="list-style-type: none;">3️⃣Gợi ý những học phần nên cải thiện theo điểm mạnh của sinh viên (<a href="https://forms.gle/7Q6" title="Hãy đóng góp bảng điểm của bạn để chúng tôi có thể xây dựng được mô hình AI">updating</a>)</li>
+    </ul>
+    
     </header>
     <!-- Thêm/Sửa điểm -->
     <div class="container">
@@ -31,7 +38,7 @@
         <div class="mt-4">
             <form id="uploadForm" class="p-4 bg-white shadow rounded text-center">
                 
-                <h4 class="mb-3 fw-bold">📂 Tải lên tệp Excel<br><a href="README.md" style="font-size: 15px;">Hướng dẫn lấy file điểm</a></h4>
+                <h4 class="mb-3 fw-bold">📂 Tải lên tệp Excel<br><a href="tutorial.html" style="font-size: 15px;">Hướng dẫn lấy file điểm</a></h4>
                 <div class="input-group">
                     <input type="file" class="form-control" id="fileInput" accept=".xlsx">
                 </div>
@@ -46,7 +53,7 @@
             <div id="courseForm" style="display: none;">
                 <label for="courseName">Tên học phần:</label>
                 <input type="text" id="courseName">
-    
+                
                 <label for="creditHours">Tín chỉ:</label>
                 <input type="number" id="creditHours" min="1">
     
@@ -82,12 +89,11 @@
         </div>
         <button class="round-button" onclick="toggleCells()">Ẩn điểm thành phần</button>
         <br>
-         
-        <!-- <button onclick="exportToCSV()">Xuất CSV</button>
-        <button onclick="exportToExcel()">Xuất Excel</button> -->
+        
+        <button onclick="exportToExcel()">Xuất Excel</button>
     </div>
 
-    <script src="chuc_nang_test.js"></script>
+    <script src="chuc_nang.js"></script>
     
 </body>
 </html>

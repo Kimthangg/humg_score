@@ -156,13 +156,18 @@ function addCourse() {
   updateTotals();
 }
 function editCourse(button) {
-    toggleCourseForm()
+    const courseForm = document.getElementById('courseForm');
+    if (courseForm.style.display !== "block") {
+        toggleCourseForm(button);
+    }
     selectedRow = button.parentElement.parentElement.parentElement;
     document.getElementById('courseName').value = selectedRow.cells[0].innerText;
     document.getElementById('creditHours').value = selectedRow.cells[1].innerText;
     document.getElementById('gradeC').value = selectedRow.cells[2].innerText;
     document.getElementById('gradeB').value = selectedRow.cells[3].innerText;
     document.getElementById('gradeA').value = selectedRow.cells[4].innerText;
+    // Scroll the page to show the course form
+    courseForm.scrollIntoView({ behavior: "smooth", block: "end" });
 }
 
 function deleteCourse(button) {
@@ -192,26 +197,47 @@ function importFromExcel(file) {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         let rows = XLSX.utils.sheet_to_json(worksheet);
-
-        // Lọc ra các môn học
-        rows = rows.filter(row => row["Tên môn học"]);
-        const list_course = new Set(['7300101','7300102','7300201','7300103','7300104','7300202','7300203','7010701','7010702','7010703']);
-        
-        // Loại bỏ các mã học phần không hợp lệ
-        rows = rows.map(row => {
-            let courseCode = row["Mã MH"] ? row["Mã MH"].toString().trim() : ""; // Chuyển về chuỗi và loại bỏ khoảng trắng
-            return isNaN(Number(courseCode)) || list_course.has(courseCode) ? null : { ...row, "Mã MH": Number(courseCode) };
-        }).filter(row => row !== null);
-
-        // Chuyển đổi dữ liệu sang object
-        const formattedRows = rows.map(row => ({
-            course_code: row["Mã MH"],
-            subject: row["Tên môn học"],
-            credits: row["Số tín chỉ"],
-            final_score: row["Điểm TK (10)"],
-            letter_grade: row["Điểm TK (C)"]
-        }));
-
+        // Nếu file excel chứa các cột này thì nhập dữ liệu vào bảng luôn
+        const expectedHeaders = ["Tên học phần", "Tín chỉ", "Điểm C", "Điểm B", "Điểm A", "Điểm hệ 10", "Điểm hệ 4"];
+        const fileHeaders = Object.keys(rows[0]);
+        let formattedRows;
+        // Check xem có phải file cũ đã xuất từ hệ thống
+        if (
+        fileHeaders.length === expectedHeaders.length &&
+        fileHeaders.every((header, index) => header === expectedHeaders[index])
+        ) {
+           // Chuyển đổi dữ liệu sang object
+        formattedRows = rows.map(row => ({
+            subject: row["Tên học phần"],
+            credits: row["Tín chỉ"],
+            final_score: row["Điểm hệ 10"],
+            letter_grade: row["Điểm hệ 4"]
+            }));
+        }
+        else{
+            // Lọc ra các môn học
+            rows = rows.filter(row => row["Tên môn học"]);
+            const list_course = new Set(['7300101','7300102','7300201','7300103','7300104','7300202','7300203','7010701','7010702','7010703']);
+            
+            // Loại bỏ các mã học phần không hợp lệ
+            rows = rows.map(row => {
+                let courseCode = row["Mã MH"] ? row["Mã MH"].toString().trim() : ""; // Chuyển về chuỗi và loại bỏ khoảng trắng
+                return isNaN(Number(courseCode)) || list_course.has(courseCode) ? null : { ...row, "Mã MH": Number(courseCode) };
+            }).filter(row => row !== null);
+            
+            // Chuyển đổi dữ liệu sang object
+            formattedRows = rows.map(row => ({
+                course_code: row["Mã MH"],
+                subject: row["Tên môn học"],
+                credits: row["Số tín chỉ"],
+                final_score: row["Điểm TK (10)"],
+                letter_grade: row["Điểm TK (C)"]
+            }));
+        }
+        // Hiển thị điểm thành phần nếu đang ẩn
+        if (isHidden) {
+            toggleCells();
+        }
         // Thêm dữ liệu vào bảng
         const tableBody = document.getElementById('courseTableBody');
         tableBody.innerHTML = ""; // Xóa dữ liệu cũ
@@ -252,7 +278,7 @@ function importFromExcel(file) {
         updateTotals();
     };
     reader.readAsArrayBuffer(file);
-}
+} 
 function changeGradeColor(selectElement, originalGrade) {
     const gradeOrder = ["F", "D", "D+", "C", "C+", "B", "B+", "A", "A+"]; // Thứ tự điểm
     const selectedGrade = selectElement.value;
@@ -297,14 +323,61 @@ function toggleCells() {
     isHidden = !isHidden;
     document.querySelector(".round-button").innerText = isHidden ? "Hiện điểm thành phần" : "Ẩn điểm thành phần";
 }
-function toggleCourseForm() {
+function toggleCourseForm(button) {
     var form = document.getElementById("courseForm");
     var btn = document.getElementById("toggleFormButton");
-    if (form.style.display === "none") {
+
+    // Nếu form đang ẩn, hiển thị form và cập nhật nội dung button theo trạng thái (thêm hay sửa)
+    if (form.style.display === "none" || form.style.display === "") {
         form.style.display = "block";
-        btn.innerText = "Ẩn thêm học phần";
+        // Nếu có giá trị selectedRow (đang ở chế độ sửa) thì cập nhật button text cho sửa
+        if (selectedRow) {
+            btn.innerText = "Ẩn sửa học phần";
+        } else {
+            btn.innerText = "Ẩn thêm học phần";
+        }
     } else {
+        // Nếu form đang hiển thị và người dùng bấm nút, ẩn form
         form.style.display = "none";
+        if (selectedRow) {
+            // Chỉ đặt lại các giá trị khi đang sửa
+            document.getElementById('courseName').value = '';
+            document.getElementById('creditHours').value = '';
+            document.getElementById('gradeC').value = '';
+            document.getElementById('gradeB').value = '';
+            document.getElementById('gradeA').value = '';
+            // Reset trạng thái sửa
+            selectedRow = null;
+        }
         btn.innerText = "Thêm học phần";
+    }
+}
+function exportToExcel() {
+    const rows = [["Tên học phần", "Tín chỉ", "Điểm C", "Điểm B", "Điểm A", "Điểm hệ 10", "Điểm hệ 4"]];
+    const table = document.getElementById("courseTableBody");
+
+    for (let i = 0; i < table.rows.length; i++) {
+        const rowData = [];
+        for (let j = 0; j < (table.rows[i].cells.length)-2; j++) {
+            rowData.push(table.rows[i].cells[j].innerText);
+        }
+        rows.push(rowData);
+    }
+
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    XLSX.utils.book_append_sheet(wb, ws, "Course Grades");
+
+    // Tạo Blob từ Workbook và tải xuống
+    const wbout = XLSX.write(wb, { bookType: "xlsx", type: "binary" });
+    const blob = new Blob([s2ab(wbout)], { type: "application/octet-stream" });
+
+    saveAs(blob, "course_grades.xlsx"); // Sử dụng thư viện FileSaver.js để tải xuống file
+
+    function s2ab(s) {
+        const buf = new ArrayBuffer(s.length);
+        const view = new Uint8Array(buf);
+        for (let i = 0; i < s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+        return buf;
     }
 }
