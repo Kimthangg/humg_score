@@ -28,9 +28,10 @@ function calculateGrades(gradeC, gradeB, gradeA) {
 
 function updateTotals() {
     const tableBody = document.getElementById('courseTableBody');
-    totalCredits = 0;
-    totalGrade10 = 0;
-    totalGrade4 = 0;
+    let totalCredits = 0;
+    let totalGrade10 = 0;
+    let totalGrade4 = 0;
+    let isEditing = false;
     for (let i = 0; i < tableBody.rows.length; i++) {
         const row = tableBody.rows[i];
         const credits = parseInt(row.cells[1].innerText);
@@ -46,19 +47,21 @@ function updateTotals() {
         }
         totalCredits += credits;
         // Xử lí khi sửa điểm chữ thì điểm hệ 10 không hiển thị
-        if (grade4 !== row.cells[6].innerText) {
-            totalGrade10 = "Đang sửa điểm chữ";
-            document.getElementById('totalGrade10').innerText = totalGrade10;
-            // document.getElementById('totalGrade10').style.color = "#F44336";
+        if (grade4 !== row.cells[6].innerText.trim()) {
+            isEditing = true;
         } else {
             totalGrade10 += credits * grade10;
-            document.getElementById('totalGrade10').innerText = (totalGrade10 / totalCredits).toFixed(2);
-            document.getElementById('totalGrade10').style.color = "";
-
         }
         totalGrade4 += credits * convertGrade4ToNumber(grade4);
     }
     document.getElementById('totalCredits').innerText = totalCredits;
+    if (isEditing) {
+        document.getElementById('totalGrade10').innerText = "Đang sửa điểm chữ";
+        document.getElementById('totalGrade10').style.color = "#F44336";
+    } else {
+        document.getElementById('totalGrade10').innerText = (totalGrade10 / totalCredits).toFixed(2);
+        document.getElementById('totalGrade10').style.color = "";
+    }
     document.getElementById('totalGrade4').innerText = (totalGrade4 / totalCredits).toFixed(2);
 }
 
@@ -224,7 +227,18 @@ function importFromExcel(file) {
                 let courseCode = row["Mã MH"] ? row["Mã MH"].toString().trim() : ""; // Chuyển về chuỗi và loại bỏ khoảng trắng
                 return isNaN(Number(courseCode)) || list_course.has(courseCode) ? null : { ...row, "Mã MH": Number(courseCode) };
             }).filter(row => row !== null);
-            
+            // Nếu môn học có nhiều lần xuất hiện, xác định điểm tổng (Điểm TK (10)) cao nhất cho mỗi mã MH
+            const maxScores = {};
+            rows.forEach(row => {
+                const code = row["Mã MH"];
+                const score = Number(row["Điểm TK (10)"]);
+                if (maxScores[code] === undefined || score > maxScores[code]) {
+                    maxScores[code] = score;
+                }
+            });
+            // Tạo ra biến uniqueRows giữ nguyên thứ tự danh sách điểm gốc, chỉ giữ lại những dòng có điểm TK (10) cao nhất
+            const uniqueRows = rows.filter(row => Number(row["Điểm TK (10)"]) === maxScores[row["Mã MH"]]);
+            rows = uniqueRows;
             // Chuyển đổi dữ liệu sang object
             formattedRows = rows.map(row => ({
                 course_code: row["Mã MH"],
