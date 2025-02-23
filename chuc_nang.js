@@ -105,6 +105,7 @@ function addCourse() {
       alert("Điểm phải nằm trong khoảng từ 0 đến 10.");
       return;
   }
+  toggleCells()
 
   const { grade10, grade4 } = calculateGrades(gradeC, gradeB, gradeA);
 

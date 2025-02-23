@@ -43,7 +43,9 @@
                     <input type="file" class="form-control" id="fileInput" accept=".xlsx">
                 </div>
                 <br>
-                <button type="button" id="uploadBtn" class="btn btn-primary" style="width: 17%; padding: 7px;">Tải tệp lên👆</button>
+                <div class="d-flex flex-row justify-content-center align-items-center">
+                    <button type="button" id="uploadBtn" class="btn btn-primary" style="width: auto;">Tải tệp lên👆</button>
+                </div>
             </form>
         </div>
         
@@ -52,19 +54,19 @@
             <button id="toggleFormButton" onclick="toggleCourseForm()">Thêm học phần</button>
             <div id="courseForm" style="display: none;">
                 <label for="courseName">Tên học phần:</label>
-                <input type="text" id="courseName">
+                <input type="text" id="courseName" required>
                 
                 <label for="creditHours">Tín chỉ:</label>
-                <input type="number" id="creditHours" min="1">
+                <input type="number" id="creditHours" min="1" required>
     
                 <label for="gradeC">Điểm C:</label>
-                <input type="number" id="gradeC" min="0" max="10">
+                <input type="number" id="gradeC" min="0" max="10" required>
     
                 <label for="gradeB">Điểm B:</label>
-                <input type="number" id="gradeB" min="0" max="10">
+                <input type="number" id="gradeB" min="0" max="10" required>
     
                 <label for="gradeA">Điểm A:</label>
-                <input type="number" id="gradeA" min="0" max="10">
+                <input type="number" id="gradeA" min="0" max="10" required>
     
                 <button onclick="addCourse()">Thêm học phần</button>
             </div>
@@ -96,7 +98,7 @@
         <p>📌 Hệ thống chỉ tính điểm học phần theo quy định của trường Đại học Mỏ - Địa chất.</p>
         <p>Nếu bạn có lỗi hoặc góp ý, vui lòng gửi phản hồi qua <a href="https://forms.gle/ckBQY8LCXpYojYsV7" class="alert-link">Form góp ý</a>.</p>
     </div>
-    <script src="chuc_nang.js"></script>
+    <script src="test/chuc_nang_test.js"></script>
     
 </body>
 </html>
