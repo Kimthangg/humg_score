@@ -613,5 +613,5 @@ function loadFromLocalStorage() {
 //     }, 100);
 // };
 
-// // Tải dữ liệu khi trang web được tải
-// document.addEventListener('DOMContentLoaded', loadFromLocalStorage);
+// Tải dữ liệu khi trang web được tải
+document.addEventListener('DOMContentLoaded', saveToLocalStorage);
