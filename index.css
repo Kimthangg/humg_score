@@ -118,14 +118,51 @@ th {
         border-radius: 8px;
         box-shadow: inset 0px 2px 5px rgba(255, 255, 255, 0.2);
     }
-.round-button {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 95px;
-    height: 95px;
+    .hidden-column {
+        display: none;
+    }
+.round-button, .round-button-suggest {
+    position: fixed;    /* Add this to your index.css file */
+    @media (max-width: 768px) {
+        /* Existing mobile styles */
+        .round-button, .round-button-suggest {
+            width: 60px;
+            height: 60px;
+            font-size: 11px;
+        }
+        
+        /* New styles for table and select elements */
+        table {
+            display: block;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        select.form-select {
+            width: 100%;
+            min-width: 60px;
+            padding: 5px;
+            font-size: 14px;
+            /* Ensure select is visible */
+            display: block !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Make table cells wider for touch targets */
+        td {
+            min-width: 70px;
+        }
+        
+        /* Ensure the select container cells are visible */
+        td:has(select) {
+            display: table-cell !important;
+            visibility: visible !important;
+        }
+    }
+    width: 90px;
+    height: 90px;
     border-radius: 50%;
-    background-color: #007bff;
     color: white;
     border: none;
     font-size: 14px;
@@ -133,33 +170,57 @@ th {
     cursor: pointer;
     box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
     transition: background-color 0.3s, transform 0.2s;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 5px;
+}
+
+.round-button {
+    bottom: 20px;
+    right: 20px;
+    background-color: #007bff;
+}
+
+.round-button-suggest {
+    bottom: 120px;
+    right: 20px;
+    background-color: #19a514;
 }
 
 .round-button:hover {
     background-color: #0056b3;
     transform: scale(1.1);
 }
-.hidden-column {
-    display: none;
-}
-.round-button-suggest {
-    position: fixed;
-    bottom: 130px;
-    right: 20px;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background-color: #19a514;
-    color: white;
-    border: none;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.3s, transform 0.2s;
-}
 
 .round-button-suggest:hover {
     background-color: #0d6e0b;
     transform: scale(1.1);
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+    .round-button, .round-button-suggest {
+        width: 60px;
+        height: 60px;
+        font-size: 11px;
+    }
+    
+    .round-button {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .round-button-suggest {
+        bottom: 90px;
+        right: 15px;
+    }
+}
+#toastContainer {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    z-index: 1050;
 }

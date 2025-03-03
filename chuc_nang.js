@@ -32,6 +32,8 @@ function updateTotals() {
     let totalGrade10 = 0;
     let totalGrade4 = 0;
     let isEditing = false;
+    let originalTotalGrade4 = 0;
+    
     for (let i = 0; i < tableBody.rows.length; i++) {
         const row = tableBody.rows[i];
         const credits = parseInt(row.cells[1].innerText);
@@ -39,30 +41,52 @@ function updateTotals() {
         // Lấy giá trị điểm hệ 4 từ select trong cell[7]
         const selectEl = row.cells[7].querySelector("select");
         let grade4;
+        let originalGrade4;
+        
         if (selectEl) {
             grade4 = selectEl.value;
+            originalGrade4 = row.cells[6].innerText.trim();
         } else {
             // Nếu không có select thì lấy giá trị gốc từ cell[6]
             grade4 = row.cells[6].innerText;
+            originalGrade4 = grade4;
         }
+        
         totalCredits += credits;
         // Xử lí khi sửa điểm chữ thì điểm hệ 10 không hiển thị
-        if (grade4 !== row.cells[6].innerText.trim()) {
+        if (grade4 !== originalGrade4) {
             isEditing = true;
         } else {
             totalGrade10 += credits * grade10;
         }
+        
         totalGrade4 += credits * convertGrade4ToNumber(grade4);
+        originalTotalGrade4 += credits * convertGrade4ToNumber(originalGrade4);
     }
+    
     document.getElementById('totalCredits').innerText = totalCredits;
+    
     if (isEditing) {
         document.getElementById('totalGrade10').innerText = "Đang sửa điểm chữ";
-        document.getElementById('totalGrade10').style.color = "#F44336";
+        document.getElementById('totalGrade10').style.color = "#B22222";
     } else {
         document.getElementById('totalGrade10').innerText = (totalGrade10 / totalCredits).toFixed(2);
         document.getElementById('totalGrade10').style.color = "";
     }
-    document.getElementById('totalGrade4').innerText = (totalGrade4 / totalCredits).toFixed(2);
+    
+    const finalGPA = (totalGrade4 / totalCredits).toFixed(2);
+    const originalGPA = (originalTotalGrade4 / totalCredits).toFixed(2);
+    
+    document.getElementById('totalGrade4').innerText = finalGPA;
+    // Đổi màu dựa trên sự thay đổi của GPA
+    if (parseFloat(finalGPA) > parseFloat(originalGPA)) {
+        document.getElementById('totalGrade4').style.color = "#00FF00";
+    } else if (parseFloat(finalGPA) < parseFloat(originalGPA)) {
+        document.getElementById('totalGrade4').style.color = "#B22222  "; // Màu đỏ
+    } else {
+        document.getElementById('totalGrade4').style.color = ""; // Màu mặc định
+    }
+    handleGradeChange(finalGPA);
 }
 
 function convertGrade4ToNumber(grade4) {
@@ -105,10 +129,11 @@ function addCourse() {
       alert("Điểm phải nằm trong khoảng từ 0 đến 10.");
       return;
   }
-  toggleCells();
 
   const { grade10, grade4 } = calculateGrades(gradeC, gradeB, gradeA);
-
+  if (isHidden) {
+    toggleCells();
+    }
   const tableBody = document.getElementById('courseTableBody');
   if (selectedRow) {
       selectedRow.cells[0].innerText = courseName;
@@ -171,6 +196,8 @@ function addCourse() {
   document.getElementById('gradeA').value = '';
 
   updateTotals();
+  tableBody.scrollIntoView({ behavior: "smooth", block: "start" });
+
 }
 function editCourse(button) {
     const courseForm = document.getElementById('courseForm');
@@ -304,6 +331,8 @@ function importFromExcel(file) {
         });
         // Cập nhật tổng điểm
         updateTotals();
+        tableBody.scrollIntoView({ behavior: "smooth", block: "start" });
+
     };
     reader.readAsArrayBuffer(file);
 } 
@@ -318,7 +347,7 @@ function changeGradeColor(selectElement, originalGrade) {
     const cell = selectElement.parentElement;
 
     if (selectedIndex > originalIndex) {
-        cell.style.backgroundColor = "#4CAF50"; // Xanh lá nếu tăng điểm
+        // Xanh lá nếu tăng điểm
         cell.style.color = "white";
     } else if (selectedIndex < originalIndex) {
         cell.style.backgroundColor = "#F44336"; // Đỏ nếu giảm điểm
@@ -328,7 +357,38 @@ function changeGradeColor(selectElement, originalGrade) {
         cell.style.color = "";
     }
 }
+ // Xử lý khi người dùng thay đổi điểm
+ function handleGradeChange(totalGrade4) {
+    
+    showCustomToast(`GPA đã thay đổi thành ${totalGrade4}`);
+}
+// Hiển thị Toast thông báo
+function showCustomToast(message, bgClass = 'bg-success') {
+    const toastId = 'toast-' + Math.random().toString(36).substr(2, 9);
+    
+    const toastHTML = `
+        <div id="${toastId}" class="toast align-items-center text-white ${bgClass} border-0 fade show" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ${message}
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    `;
 
+    document.getElementById('toastContainer').insertAdjacentHTML('beforeend', toastHTML);
+
+    let toastElement = document.getElementById(toastId);
+    let toast = new bootstrap.Toast(toastElement);
+    toast.show();
+
+    // Tự động ẩn sau 3 giây
+    setTimeout(() => {
+        toast.hide();
+        setTimeout(() => toastElement.remove(), 500);
+    }, 2000);
+}
 
 let isHidden = false;
 function toggleCells() {
@@ -463,3 +523,95 @@ function suggestImprovements() {
         alert("Không có môn học nào cần cải thiện!");
     }
 }
+// Hàm lưu dữ liệu bảng điểm vào localStorage
+function saveToLocalStorage() {
+    const tableBody = document.getElementById('courseTableBody');
+    const courses = [];
+
+    for (let i = 0; i < tableBody.rows.length; i++) {
+        const row = tableBody.rows[i];
+        const course = {
+            courseName: row.cells[0].innerText,
+            creditHours: row.cells[1].innerText,
+            gradeC: row.cells[2].innerText,
+            gradeB: row.cells[3].innerText,
+            gradeA: row.cells[4].innerText,
+            grade10: row.cells[5].innerText,
+            grade4: row.cells[6].innerText
+        };
+        courses.push(course);
+    }
+
+    localStorage.setItem('courseGrades', JSON.stringify(courses));
+}
+
+// Hàm tải dữ liệu từ localStorage
+function loadFromLocalStorage() {
+    const savedData = localStorage.getItem('courseGrades');
+    if (savedData) {
+        const courses = JSON.parse(savedData);
+        const tableBody = document.getElementById('courseTableBody');
+        tableBody.innerHTML = ''; // Xóa dữ liệu cũ
+
+        courses.forEach(course => {
+            const newRow = tableBody.insertRow();
+            newRow.insertCell(0).innerText = course.courseName;
+            newRow.insertCell(1).innerText = course.creditHours;
+            newRow.insertCell(2).innerText = course.gradeC;
+            newRow.insertCell(3).innerText = course.gradeB;
+            newRow.insertCell(4).innerText = course.gradeA;
+            newRow.insertCell(5).innerText = course.grade10;
+            newRow.insertCell(6).innerText = course.grade4;
+
+            const gradeCell = newRow.insertCell(7);
+            gradeCell.innerHTML = `
+                <select class="form-select grade-select" onchange="changeGradeColor(this, '${course.grade4}'); updateTotals();">
+                    <option value="A+" ${course.grade4 === "A+" ? "selected" : ""}>A+</option>
+                    <option value="A" ${course.grade4 === "A" ? "selected" : ""}>A</option>
+                    <option value="B+" ${course.grade4 === "B+" ? "selected" : ""}>B+</option>
+                    <option value="B" ${course.grade4 === "B" ? "selected" : ""}>B</option>
+                    <option value="C+" ${course.grade4 === "C+" ? "selected" : ""}>C+</option>
+                    <option value="C" ${course.grade4 === "C" ? "selected" : ""}>C</option>
+                    <option value="D+" ${course.grade4 === "D+" ? "selected" : ""}>D+</option>
+                    <option value="D" ${course.grade4 === "D" ? "selected" : ""}>D</option>
+                    <option value="F" ${course.grade4 === "F" ? "selected" : ""}>F</option>
+                </select>
+            `;
+
+            const actionsCell = newRow.insertCell(8);
+            actionsCell.innerHTML = `
+                <div class="btn-group">
+                    <button onclick="editCourse(this)">Sửa</button>
+                    <button class="delete-button" onclick="deleteCourse(this)">Xóa</button>
+                </div>`;
+        });
+
+        updateTotals();
+    }
+}
+
+// // Lưu dữ liệu sau khi thêm, sửa hoặc xóa môn học
+// const originalAddCourse = addCourse;
+// addCourse = function() {
+//     originalAddCourse.apply(this, arguments);
+//     saveToLocalStorage();
+// };
+
+// const originalDeleteCourse = deleteCourse;
+// deleteCourse = function() {
+//     originalDeleteCourse.apply(this, arguments);
+//     saveToLocalStorage();
+// };
+
+// // Lưu dữ liệu sau khi upload file Excel
+// const originalImportFromExcel = importFromExcel;
+// importFromExcel = function(file) {
+//     originalImportFromExcel.call(this, file);
+//     // Thêm timeout ngắn để đảm bảo dữ liệu đã được xử lý xong
+//     setTimeout(() => {
+//         saveToLocalStorage();
+//     }, 100);
+// };
+
+// // Tải dữ liệu khi trang web được tải
+// document.addEventListener('DOMContentLoaded', loadFromLocalStorage);

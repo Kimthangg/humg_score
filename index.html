@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="index.css">
 </head>
 <body>
+    <!-- Container chứa Toast -->
+    <div id="toastContainer"></div>
     <!-- Phần hiển thị tổng điểm -->
     <div class="totals-container">
         <div class="totals">
@@ -53,6 +55,7 @@
         <!-- Bảng hiển thị dữ liệu -->
         <div class="container mt-4">
             <button id="toggleFormButton" onclick="toggleCourseForm()">Thêm học phần</button>
+            <button onclick="loadFromLocalStorage()">Load bảng điểm cũ</button>
             <div id="courseForm" style="display: none;">
                 <label for="courseName">Tên học phần:</label>
                 <input type="text" id="courseName" required>
