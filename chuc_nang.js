@@ -603,15 +603,15 @@ function loadFromLocalStorage() {
 //     saveToLocalStorage();
 // };
 
-// // Lưu dữ liệu sau khi upload file Excel
-// const originalImportFromExcel = importFromExcel;
-// importFromExcel = function(file) {
-//     originalImportFromExcel.call(this, file);
-//     // Thêm timeout ngắn để đảm bảo dữ liệu đã được xử lý xong
-//     setTimeout(() => {
-//         saveToLocalStorage();
-//     }, 100);
-// };
+// Lưu dữ liệu sau khi upload file Excel
+const originalImportFromExcel = importFromExcel;
+importFromExcel = function(file) {
+    originalImportFromExcel.call(this, file);
+    // Thêm timeout ngắn để đảm bảo dữ liệu đã được xử lý xong
+    setTimeout(() => {
+        saveToLocalStorage();
+    }, 100);
+};
 
 // Tải dữ liệu khi trang web được tải
 //document.addEventListener('DOMContentLoaded', saveToLocalStorage);
