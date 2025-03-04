@@ -199,12 +199,17 @@ th {
     background-color: #0d6e0b;
     transform: scale(1.1);
 }
-
+#toastContainer {
+    position: fixed;
+    top: 180px;
+    right: 20px;
+    z-index: 1050;
+}
 /* Mobile-specific styles */
 @media (max-width: 768px) {
     #toastContainer {
         position: fixed;
-        top: 170px;
+        top: 180px;
         right: 20px;
         z-index: 1050;
     }
@@ -223,10 +228,4 @@ th {
         bottom: 90px;
         right: 15px;
     }
-}
-#toastContainer {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    z-index: 1050;
 }
