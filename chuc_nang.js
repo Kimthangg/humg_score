@@ -587,6 +587,8 @@ function loadFromLocalStorage() {
         });
 
         updateTotals();
+        tableBody.scrollIntoView({ behavior: "smooth", block: "start" });
+
     }
 }
 
