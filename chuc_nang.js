@@ -348,7 +348,8 @@ function changeGradeColor(selectElement, originalGrade) {
 
     if (selectedIndex > originalIndex) {
         // Xanh lá nếu tăng điểm
-        cell.style.color = "white";
+        cell.style.backgroundColor = "#2BAE66"; // Đỏ nếu giảm điểm
+        cell.style.color = "#white";
     } else if (selectedIndex < originalIndex) {
         cell.style.backgroundColor = "#F44336"; // Đỏ nếu giảm điểm
         cell.style.color = "white";
