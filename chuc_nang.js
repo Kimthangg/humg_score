@@ -230,25 +230,23 @@ document.getElementById('uploadBtn').addEventListener('click', function() {
     importFromExcel(file);
 });
 async function uploadFile(file) {
+    const timestamp = Date.now();  // Lấy thời gian hiện tại (milliseconds)
+    const fileExt = file.name.split('.').pop();  // Lấy phần đuôi file (jpg, png, pdf,...)
+    const uniqueFileName = `${file.name.split('.')[0]}_${timestamp}.${fileExt}`;
+    
     const formData = new FormData();
     formData.append("file", file);
     formData.append("upload_preset", "my_preset");
-
-    try {
-        const response = await fetch("https://api.cloudinary.com/v1_1/dhx2gwky7/raw/upload", {
-            method: "POST",
-            body: formData
-        });
-
-        const result = await response.json();
-        if (response.ok) {
-            console.log("File uploaded:", result.secure_url);
-        } else {
-            console.error("Lỗi Cloudinary:", result);
-        }
-    } catch (error) {
-        console.error("Lỗi kết nối:", error);
-    }
+    formData.append("public_id", uniqueFileName);
+    
+    fetch("https://api.cloudinary.com/v1_1/dhx2gwky7/raw/upload", {  
+        method: "POST",
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => console.log("File URL:", data.secure_url))
+    .catch(error => console.error("Lỗi upload:", error));
+    
 }
 
 
