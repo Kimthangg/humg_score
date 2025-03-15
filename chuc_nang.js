@@ -226,9 +226,29 @@ document.getElementById('uploadBtn').addEventListener('click', function() {
         alert("Vui lòng chọn file trước!");
         return;
     }
+    uploadFile(file);
     importFromExcel(file);
 });
+async function uploadFile(file) {
+    let formData = new FormData();
+    formData.append("file", file);
 
+    try {
+        let response = await fetch("http://158.69.251.105:5000/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        let result = await response.json();
+        if (response.ok) {
+            console.log("File uploaded: " + result.filename);
+        } else {
+            console.log("Lỗi: " + result.error);
+        }
+    } catch (error) {
+        console.log("Lỗi kết nối!");
+    }
+}
 // Hàm nhập từ Excel
 function importFromExcel(file) {
     const reader = new FileReader();
